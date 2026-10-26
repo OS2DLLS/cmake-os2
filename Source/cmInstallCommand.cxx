@@ -843,41 +843,42 @@ bool HandleTargetsMode(std::vector<std::string> const& args,
               target, archiveArgs, true, helper.Makefile->GetBacktrace());
             artifactsSpecified = true;
           }
-#ifdef __OS2__
-          if (!libraryArgs.GetDestination().empty()) {
-            // The DLL uses the LIBRARY properties.
-            libraryGenerator = CreateInstallTargetGenerator(
-              target, libraryArgs, false, helper.Makefile->GetBacktrace());
-            artifactsSpecified = true;
-          }
-#else
-          if (!runtimeArgs.GetDestination().empty()) {
-            // The DLL uses the RUNTIME properties.
-            runtimeGenerator = CreateInstallTargetGenerator(
-              target, runtimeArgs, false, helper.Makefile->GetBacktrace());
-            artifactsSpecified = true;
-          }
-#endif
-#ifdef __OS2__
-          if (!archiveGenerator && !libraryGenerator) {
-#else
-          if (!archiveGenerator && !runtimeGenerator) {
-#endif
-            archiveGenerator = CreateInstallTargetGenerator(
-              target, archiveArgs, true, helper.Makefile->GetBacktrace(),
-              helper.GetArchiveDestination(nullptr));
-#ifdef __OS2__
-            libraryGenerator = CreateInstallTargetGenerator(
-              target, libraryArgs, false, helper.Makefile->GetBacktrace(),
-              helper.GetLibraryDestination(nullptr));
-#else
-            runtimeGenerator = CreateInstallTargetGenerator(
-              target, runtimeArgs, false, helper.Makefile->GetBacktrace(),
-              helper.GetRuntimeDestination(nullptr));
-#endif
-          }
-          if (runtimeDependencySet && runtimeGenerator) {
-            runtimeDependencySet->AddLibrary(runtimeGenerator.get());
+          if (helper.Makefile->IsOn("OS2")) {
+            if (!libraryArgs.GetDestination().empty()) {
+              // The DLL uses the LIBRARY properties.
+              libraryGenerator = CreateInstallTargetGenerator(
+                target, libraryArgs, false, helper.Makefile->GetBacktrace());
+              artifactsSpecified = true;
+            }
+            if (!archiveGenerator && !libraryGenerator) {
+              archiveGenerator = CreateInstallTargetGenerator(
+                target, archiveArgs, true, helper.Makefile->GetBacktrace(),
+                helper.GetArchiveDestination(nullptr));
+              libraryGenerator = CreateInstallTargetGenerator(
+                target, libraryArgs, false, helper.Makefile->GetBacktrace(),
+                helper.GetLibraryDestination(nullptr));
+            }
+            if (runtimeDependencySet && libraryGenerator) {
+              runtimeDependencySet->AddLibrary(libraryGenerator.get());
+            }
+          } else {
+            if (!runtimeArgs.GetDestination().empty()) {
+              // The DLL uses the RUNTIME properties.
+              runtimeGenerator = CreateInstallTargetGenerator(
+                target, runtimeArgs, false, helper.Makefile->GetBacktrace());
+              artifactsSpecified = true;
+            }
+            if (!archiveGenerator && !runtimeGenerator) {
+              archiveGenerator = CreateInstallTargetGenerator(
+                target, archiveArgs, true, helper.Makefile->GetBacktrace(),
+                helper.GetArchiveDestination(nullptr));
+              runtimeGenerator = CreateInstallTargetGenerator(
+                target, runtimeArgs, false, helper.Makefile->GetBacktrace(),
+                helper.GetRuntimeDestination(nullptr));
+            }
+            if (runtimeDependencySet && runtimeGenerator) {
+              runtimeDependencySet->AddLibrary(runtimeGenerator.get());
+            }
           }
         } else {
           // This is a non-DLL platform.

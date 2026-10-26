@@ -260,13 +260,13 @@ const char* cmGeneratorTarget::GetOutputTargetType(
       if (this->IsDLLPlatform()) {
         switch (artifact) {
           case cmStateEnums::RuntimeBinaryArtifact:
-#ifdef __OS2__
-            // A DLL shared library is treated as a library target.
-            return "LIBRARY";
-#else
+            if (this->Makefile->IsOn("OS2")) {
+              // A DLL shared library is treated as a library target.
+              return "LIBRARY";
+            }
+
             // A DLL shared library is treated as a runtime target.
             return "RUNTIME";
-#endif
           case cmStateEnums::ImportLibraryArtifact:
             // A DLL import library is treated as an archive target.
             return "ARCHIVE";
@@ -345,12 +345,12 @@ std::string cmGeneratorTarget::GetOutputName(
       props.push_back(configUpper + "_OUTPUT_NAME");
     }
 
-#ifdef __OS2__
-    // short name for os/2 to overcome the 8.3 dll name scheme
-    // not needed for importlibs
-    if (artifact != cmStateEnums::ImportLibraryArtifact)
-      props.push_back("TARGET_SHORT");
-#endif
+    if (this->Makefile->IsOn("OS2")) {
+      // short name for os/2 to overcome the 8.3 dll name scheme
+      // not needed for importlibs
+      if (artifact != cmStateEnums::ImportLibraryArtifact)
+        props.push_back("TARGET_SHORT");
+    }
 
     // OUTPUT_NAME
     props.emplace_back("OUTPUT_NAME");
@@ -3683,12 +3683,11 @@ cmGeneratorTarget::GetFullNameInternalComponents(
     outBase += configPostfix;
   }
 
-#ifdef __OS2__
-  if ((this->GetType() == cmStateEnums::SHARED_LIBRARY ||
+  if (this->Makefile->IsOn("OS2") &&
+      (this->GetType() == cmStateEnums::SHARED_LIBRARY ||
       this->GetType() == cmStateEnums::MODULE_LIBRARY) &&
       !isImportedLibraryArtifact && outBase.length() > 8)
     outBase.erase(8);
-#endif
 
   // Name shared libraries with their version number on some platforms.
   if (cmValue soversion = this->GetProperty("SOVERSION")) {
@@ -3701,18 +3700,17 @@ cmGeneratorTarget::GetFullNameInternalComponents(
         (dllProp.IsOn() ||
          (!dllProp.IsSet() &&
           this->Makefile->IsOn("CMAKE_SHARED_LIBRARY_NAME_WITH_VERSION")))) {
-#ifndef __OS2__
-      outBase += "-";
-#else
-      std::string soversionString;
-      soversionString += *soversion;
-      cmSystemTools::ReplaceString(soversionString, ".", "");
-      soversion = (cmValue) &soversionString;
-      int len = soversionString.length();
-      if(outBase.length() + len > 8)
-        outBase.erase(8 - len);
-#endif
-      outBase += *soversion;
+      if (!this->Makefile->IsOn("OS2")) {
+        outBase += "-";
+        outBase += *soversion;
+      } else {
+        std::string soversionString = *soversion;
+        cmSystemTools::ReplaceString(soversionString, ".", "");
+        int len = soversionString.length();
+        if(outBase.length() + len > 8)
+          outBase.erase(8 - len);
+        outBase += soversionString;
+      }
     }
   }
 

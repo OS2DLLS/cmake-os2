@@ -543,7 +543,6 @@ void cmNinjaNormalTargetGenerator::WriteLinkRule(bool useResponseFile,
     vars.TargetVersionMajor = targetVersionMajor.c_str();
     vars.TargetVersionMinor = targetVersionMinor.c_str();
 
-#ifdef __OS2__
     auto const tgtNames = this->TargetNames(config);
     vars.TargetNameOS2 = tgtNames.Base.c_str();
     vars.OS2DefVendor = this->GeneratorTarget->GetProperty("OS2_DEF_VENDOR").GetCStr();
@@ -552,7 +551,6 @@ void cmNinjaNormalTargetGenerator::WriteLinkRule(bool useResponseFile,
     vars.OS2DefExeType = this->GeneratorTarget->GetProperty("OS2_DEF_EXEType").GetCStr();
     vars.OS2DefExeStack = this->GeneratorTarget->GetProperty("OS2_DEF_EXEStack").GetCStr();
     vars.Version = this->GeneratorTarget->GetProperty("VERSION").GetCStr();
-#endif
 
     vars.Flags = "$FLAGS";
     vars.LinkFlags = "$LINK_FLAGS";

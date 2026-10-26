@@ -571,14 +571,12 @@ void cmMakefileExecutableTargetGenerator::WriteExecutableRule(bool relink)
     vars.Flags = flags.c_str();
     vars.LinkFlags = linkFlags.c_str();
     vars.Manifests = manifests.c_str();
-#ifdef __OS2__
     vars.OS2DefVendor = this->GeneratorTarget->GetProperty("OS2_DEF_VENDOR").GetCStr();
     vars.OS2DefVersion = this->GeneratorTarget->GetProperty("OS2_DEF_VERSION").GetCStr();
     vars.OS2DefPatch = this->GeneratorTarget->GetProperty("OS2_DEF_PATCH").GetCStr();
     vars.OS2DefExeType = this->GeneratorTarget->GetProperty("OS2_DEF_EXEType").GetCStr();
     vars.OS2DefExeStack = this->GeneratorTarget->GetProperty("OS2_DEF_EXEStack").GetCStr();
     vars.Version = this->GeneratorTarget->GetProperty("VERSION").GetCStr();
-#endif
 
     std::string linkerLauncher =
       this->GetLinkerLauncher(this->GetConfigName());

@@ -226,7 +226,6 @@ std::string cmRulePlaceholderExpander::ExpandVariable(
       }
     }
 
-#ifdef __OS2__
    // give back the name of the target without extension and any leading path
    // this is needed to have the def files created right
     if (this->ReplaceValues->Target) {
@@ -255,7 +254,6 @@ std::string cmRulePlaceholderExpander::ExpandVariable(
         return targetBase;
       }
     }
-#endif
 
   }
   if (variable == "TARGET_SONAME" || variable == "SONAME_FLAG" ||
@@ -296,7 +294,6 @@ std::string cmRulePlaceholderExpander::ExpandVariable(
     }
   }
 
-#ifdef __OS2__
   if (this->ReplaceValues->CMTargetName) {
     if (variable == "OS2_DEF_VERSION") {
 
@@ -346,7 +343,6 @@ std::string cmRulePlaceholderExpander::ExpandVariable(
       }
     }
   }
-#endif
   if (this->ReplaceValues->Output) {
     if (variable == "OUTPUT") {
       return this->ReplaceValues->Output;

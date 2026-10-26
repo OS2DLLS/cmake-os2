@@ -62,7 +62,6 @@ public:
     const char* DependencyFile = nullptr;
     const char* DependencyTarget = nullptr;
     const char* FilterPrefix = nullptr;
-#ifdef __OS2__
     const char* TargetNameOS2 = nullptr;
     const char* OS2DefVendor = nullptr;
     const char* OS2DefPatch = nullptr;
@@ -70,7 +69,6 @@ public:
     const char* OS2DefExeType = nullptr;
     const char* OS2DefExeStack = nullptr;
     const char* Version = nullptr;
-#endif
     const char* SwiftLibraryName = nullptr;
     const char* SwiftModule = nullptr;
     const char* SwiftModuleName = nullptr;
